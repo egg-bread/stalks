@@ -1,5 +1,4 @@
 #include "csv.h"
-#include <iostream>
 
 Table readCsv(std::string &file)
 {
@@ -39,15 +38,25 @@ Table readCsv(std::string &file)
 
         while (std::getline(ss, price, ','))
         {
-            std::cout << ":) " << price << ":)" << std::endl;
-            if (price == "")
+            if (price == "\r")
+            { // cursed carriage return on csv
+                ss.ignore();
+            }
+            else if (price.empty())
             {
                 // no price entered on csv, use holder INT_MIN
                 contents[idx++].second.push_back(INT_MIN);
             }
             else
             {
-                contents[idx++].second.push_back(1);
+                try
+                {
+                    contents[idx++].second.push_back(std::stoi(price));
+                }
+                catch (...)
+                {
+                    throw TurnipException(NUM_VAL_REQUIRED);
+                }
             }
         }
     }
@@ -59,6 +68,11 @@ Table readCsv(std::string &file)
 
 bool validateTurnips(Table &t)
 {
+    if (t.size() == 0)
+    {
+        throw TurnipException(EMPTY_CSV);
+    }
+
     if (t.size() != 13)
     {
         // 12 cols for mon-sat am & pm, plus 1 more for daisy mae's price col
@@ -92,4 +106,5 @@ bool validateTurnips(Table &t)
 std::vector<Turnip> tableToTurnip(Table &t)
 {
     // TODO: count # INT_MINs per row, if thats = 12, throw turnips
+    return std::vector<Turnip>();
 }

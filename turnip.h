@@ -11,13 +11,13 @@ class Turnip
     static const int MAX_BASE = 110;
     enum
     {
-        MON,
-        TUES,
-        WED,
-        THURS,
-        FRI,
-        SAT
-    };
+        MON = 1,
+        TUES = 3,
+        WED = 5,
+        THURS = 7,
+        FRI = 9,
+        SAT = 11
+    }; // col indexes of csv for the sell dates
     int basePrice;
     bool firstBuy; 
     std::vector<SellPrice> sellPrices; // declared sell prices from the nooklings
