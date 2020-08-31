@@ -6,8 +6,10 @@ SellPrice::SellPrice(int am, int pm) {
     if (validateSellPrice(am) && validateSellPrice(pm)) {
         amPrice = am;
         pmPrice = pm;
+    } else if (!validateSellPrice(am)) {
+        throw TurnipException(NOOKLING_PRICE_OUT_OF_RANGE + std::to_string(am));
     } else {
-        throw TurnipException(NOOKLING_PRICE_OUT_OF_RANGE);
+        throw TurnipException(NOOKLING_PRICE_OUT_OF_RANGE + std::to_string(pm));
     }
 }
 

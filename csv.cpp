@@ -1,5 +1,6 @@
 #include "csv.h"
 
+
 Table readCsv(std::string &file)
 {
     Table contents;
@@ -28,12 +29,12 @@ Table readCsv(std::string &file)
         }
     }
 
-    // get daisy mae price & turnip sell prices
+    int idx = 0;
+    // get first buy, daisy mae price & turnip sell prices
     while (std::getline(csv, line))
     {
         std::istringstream ss(line);
 
-        int idx = 0;
         std::string price;
 
         while (std::getline(ss, price, ','))
@@ -41,6 +42,7 @@ Table readCsv(std::string &file)
             if (price == "\r")
             { // cursed carriage return on csv
                 ss.ignore();
+                contents[idx++].second.push_back(INT_MIN); // edge case where 2 or more rows of data but first row's last one is unfilled
             }
             else if (price.empty())
             {
@@ -59,6 +61,13 @@ Table readCsv(std::string &file)
                 }
             }
         }
+
+        if (idx == 13)
+        { // edge case for when csv has only one row but last cell is unfilled
+            contents[idx].second.push_back(INT_MIN);
+        }
+
+        idx = 0;
     }
 
     csv.close();
@@ -68,34 +77,34 @@ Table readCsv(std::string &file)
 
 bool validateTurnips(Table &t)
 {
-    if (t.size() == 0)
+    if (t.empty())
     {
         throw TurnipException(EMPTY_CSV);
     }
 
-    if (t.size() != 13)
+    if (t.size() != 14)
     {
-        // 12 cols for mon-sat am & pm, plus 1 more for daisy mae's price col
+        // 12 cols for mon-sat am & pm, plus 1 more for daisy mae's price col and 1 for first time buy col
         throw TurnipException(CSV_COL_NUM_INVALID);
     }
 
     // validate daisy mae's sunday price
-    for (int daisymae : t[0].second)
+    for (int daisymae : t[1].second)
     {
         if (!Turnip::validateBasePrice(daisymae))
         {
-            throw TurnipException(BASE_PRICE_OUT_OF_RANGE);
+            throw TurnipException(BASE_PRICE_OUT_OF_RANGE + std::to_string(daisymae));
         }
     }
 
     // validate selling price at nooklings
-    for (int day = 1; day < t.size(); ++day)
+    for (int day = 2; day < t.size(); ++day)
     {
         for (int sell : t[day].second)
         {
             if (!SellPrice::validateSellPrice(sell))
             {
-                throw TurnipException(NOOKLING_PRICE_OUT_OF_RANGE);
+                throw TurnipException(NOOKLING_PRICE_OUT_OF_RANGE + std::to_string(sell));
             }
         }
     }
@@ -103,8 +112,51 @@ bool validateTurnips(Table &t)
     return true;
 }
 
-std::vector<Turnip> tableToTurnip(Table &t)
+std::vector<Turnip *> tableToTurnip(Table &t)
 {
-    // TODO: count # INT_MINs per row, if thats = 12, throw turnips
-    return std::vector<Turnip>();
+    std::vector<Turnip *> islandTurnips;
+
+    for (int island = 0; island < t[0].second.size(); ++island)
+    { // iterate over rows
+        int unfilledDays = 0;
+        std::vector<SellPrice *> islandPrice;
+
+        for (int day = 2; day < t.size(); day += 2)
+        { // get that row's vals (an island's prices)
+
+            int amPrice = t[day].second[island];
+            int pmPrice = t[day + 1].second[island];
+
+            if (isUnfilledField(amPrice))
+            {
+                ++unfilledDays;
+            }
+            if (isUnfilledField(pmPrice))
+            {
+                ++unfilledDays;
+            }
+
+            islandPrice.emplace_back(new SellPrice(amPrice, pmPrice));
+        } // done one island's prices
+
+        if (unfilledDays == 12)
+        {
+            // no data filled in for any day, not even one, how do we predict?
+            throw TurnipException(NOT_ENOUGH_SELL_DATA);
+        }
+        unfilledDays = 0;
+
+        // create turnip obj
+        bool firstTimeBuyer = t[0].second[island];
+        int basePrice = t[1].second[island];
+
+        islandTurnips.emplace_back(new Turnip(basePrice, firstTimeBuyer, islandPrice));
+    }
+
+    return islandTurnips;
+}
+
+bool isUnfilledField(int n)
+{
+    return n == INT_MIN;
 }

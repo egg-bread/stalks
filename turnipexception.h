@@ -3,8 +3,8 @@
 
 #include <string>
 
-const std::string BASE_PRICE_OUT_OF_RANGE = "Daisy Mae's Sunday price is invalid :(";
-const std::string NOOKLING_PRICE_OUT_OF_RANGE = "The Nooklings can't be buying your turnips for a specified price in your csv.";
+const std::string BASE_PRICE_OUT_OF_RANGE = "Daisy Mae's Sunday price can't be: ";
+const std::string NOOKLING_PRICE_OUT_OF_RANGE = "The Nooklings can't be buying your turnips for: ";
 const std::string FILE_NOT_FOUND = "Csv file not found!";
 const std::string CSV_COL_NUM_INVALID = "Csv file doesn't have 13 columns. Make sure to use the template csv!";
 const std::string NOT_ENOUGH_SELL_DATA = "Please provide at least one day's (AM or PM) sell prices for predictions.";

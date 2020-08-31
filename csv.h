@@ -6,6 +6,7 @@
 #include <sstream>
 #include <fstream>
 #include <utility>
+#include <climits>
 #include "turnipexception.h"
 #include "turnip.h"
 
@@ -21,6 +22,9 @@ bool validateTurnips(Table &t);
 // convert read in csv to turnips and the csv MUST BE VALID
 // only use this if validateTurnips returns true but this fn is dummy-proofed
 // with validation price checks during construction too
-std::vector<Turnip> tableToTurnip(Table &t);
+// t is guaranteed to have 13 elems in the vector representing the 13 rows in the csv
+std::vector<Turnip *> tableToTurnip(Table &t);
+
+bool isUnfilledField(int n);
 
 #endif

@@ -1,34 +1,101 @@
 #include <iostream>
 #include "csv.h"
+#include "turnipart.h"
 
 using namespace std;
 
+/*
+    Created by egg-bread on GitHub.
+    Last update: Aug 31, 2020
+*/
+
 const string INVALID_ARG_NUM = "You've entered an invalid number of arguments!";
-const string HELP_MSG = "Usage: ./stalks [true | false] turnip_prices.csv";
+const string HELP_MSG = "Usage: ./stalks turnip_prices.csv";
 const string NO_ISLANDS = "There are no islands to predict turnip prices for!";
+const string CANT_PREDICT = "Nothing to predict for this island. Last possible price on Sat PM already provided. Given island's turnip data:";
+const string PREDICTING = "Predicting turnip prices for this island's turnip data:";
 
-int main(int argc, char** argv) {
-    if (argc == 2 || argc == 3) {
-        try {
-            // ./stalks 0 turnip_prices.csv VS ./stalks turnip_prices.csv
-            bool firstTimeBuyer = false;
-            if (argc - 2 == 1) {
-                istringstream(argv[1]) >> firstTimeBuyer; // invalid input -> false
-            } 
-            
+void printReadTurnips(vector<Turnip *> &islandTurnips)
+{
+
+    cout << "~~~~~~~~~~~~~~~~~~~~~~" << endl;
+    cout << "READ IN TURNIP DATA" << endl << endl;
+
+    for (Turnip *t : islandTurnips)
+    {
+        cout << t << endl;
+    }
+
+    cout << "~~~~~~~~~~~~~~~~~~~~~~" << endl << endl;
+}
+
+vector<Turnip *> getTurnips(string &csv)
+{
+    TurnipArt *splash = new TurnipArt();
+    cout << splash << endl;
+    delete splash;
+
+    cout << "Getting your turnip prices..." << endl;
+    Table stalkBucket = readCsv(csv);
+
+    cout << "Validating turnip prices..." << endl;
+    validateTurnips(stalkBucket);
+
+    cout << "Bucketing turnips..." << endl
+         << endl;
+    ;
+    vector<Turnip *> islandTurnips = tableToTurnip(stalkBucket);
+
+    if (islandTurnips.empty())
+    {
+        throw TurnipException(NO_ISLANDS);
+    }
+
+    return islandTurnips;
+}
+
+void predictTurnips(vector<Turnip *> &islandTurnips)
+{
+    for (auto &turnip : islandTurnips)
+    {
+        turnip->calculateLastInputDay();
+        if (turnip->getLastInputDay() == -1)
+        { // -1 means that sat PM was filled in, so nothing to predict
+            cout << CANT_PREDICT << endl;
+            cout << turnip << endl;
+        }
+        else
+        {
+            // predict from lastInputDay + 1 and onwards
+            cout << PREDICTING << endl;
+            cout << turnip << endl;
+        }
+    }
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2)
+    {
+        try
+        {
+            // read in csv
             string csvFile = argv[argc - 1];
-
-            Table stalkBucket = readCsv(csvFile);
-            validateTurnips(stalkBucket);
-            vector<Turnip> islandTurnips = tableToTurnip(stalkBucket);
+            vector<Turnip *> islandTurnips = getTurnips(csvFile);
 
             // iterate over all islands to predict prices
+            predictTurnips(islandTurnips);
 
-        } catch (TurnipException &e) {
+            // generate graphs
+        }
+        catch (TurnipException &e)
+        {
             cout << e.what() << endl;
             return 1;
-        }   
-    } else {
+        }
+    }
+    else
+    {
         cout << INVALID_ARG_NUM << endl;
         cout << HELP_MSG << endl;
         return 1;

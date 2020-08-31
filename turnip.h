@@ -3,29 +3,32 @@
 
 #include <vector>
 #include <string>
+#include <utility> // for move
+#include <iostream>
+#include <climits>
 #include "sellprice.h"
 
 class Turnip
 {
     static const int MIN_BASE = 90;
     static const int MAX_BASE = 110;
-    enum
-    {
-        MON = 1,
-        TUES = 3,
-        WED = 5,
-        THURS = 7,
-        FRI = 9,
-        SAT = 11
-    }; // col indexes of csv for the sell dates
+    static inline std::vector<std::string> weekdays = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+
     int basePrice;
-    bool firstBuy; 
-    std::vector<SellPrice> sellPrices; // declared sell prices from the nooklings
+    int lastInputDay; // last idx in sellPrices that has an entered val
+    bool firstBuy;
+    std::vector<SellPrice *> sellPrices; // declared sell prices from the nooklings
 
 public:
-    Turnip(int base, bool buy, std::vector<SellPrice> sells);
+    Turnip(int base, bool buy, std::vector<SellPrice *> sells);
+    int getLastInputDay();
+    void setLastInputDay(int day);
+    void calculateLastInputDay();
+    void predict
     static bool validateBasePrice(int base);
-    // TODO: predict prices...
+    friend std::ostream &operator<<(std::ostream &out, Turnip *turnip);
 };
+
+std::ostream &operator<<(std::ostream &out, Turnip &turnip);
 
 #endif

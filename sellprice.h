@@ -10,6 +10,23 @@ class SellPrice
 
 public:
     SellPrice(int am, int pm);
+    
+    int getAmPrice() {
+        return amPrice;
+    }
+
+    int getPmPrice() {
+        return pmPrice;
+    }
+
+    void setAmPrice(int a) {
+        amPrice = a;
+    }
+
+    void setPmPrice(int p) {
+        pmPrice = p;
+    }
+
     static bool validateSellPrice(int p); // validate selling price
 };
 
