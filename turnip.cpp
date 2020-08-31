@@ -57,6 +57,10 @@ void Turnip::calculateLastInputDay()
     }
 }
 
+void Turnip::predict() {
+    // TODO
+}
+
 std::ostream &operator<<(std::ostream &out, Turnip *turnip)
 {
     std::string buyer = turnip->firstBuy ? "Yes" : "No";

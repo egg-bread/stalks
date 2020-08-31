@@ -24,7 +24,7 @@ public:
     int getLastInputDay();
     void setLastInputDay(int day);
     void calculateLastInputDay();
-    void predict
+    void predict();
     static bool validateBasePrice(int base);
     friend std::ostream &operator<<(std::ostream &out, Turnip *turnip);
 };
