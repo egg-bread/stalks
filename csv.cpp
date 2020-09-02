@@ -119,7 +119,7 @@ std::vector<Turnip *> tableToTurnip(Table &t)
     for (int island = 0; island < t[0].second.size(); ++island)
     { // iterate over rows
         int unfilledDays = 0;
-        std::vector<SellPrice *> islandPrice;
+        std::vector<int> islandPrice;
 
         for (int day = 2; day < t.size(); day += 2)
         { // get that row's vals (an island's prices)
@@ -136,7 +136,8 @@ std::vector<Turnip *> tableToTurnip(Table &t)
                 ++unfilledDays;
             }
 
-            islandPrice.emplace_back(new SellPrice(amPrice, pmPrice));
+            islandPrice.emplace_back(amPrice);
+            islandPrice.emplace_back(pmPrice);
         } // done one island's prices
 
         if (unfilledDays == 12)

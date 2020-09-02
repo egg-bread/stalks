@@ -9,6 +9,7 @@
 #include <climits>
 #include "turnipexception.h"
 #include "turnip.h"
+#include "sellprice.h"
 
 // each pair is the col name and all values falling under the col in Table
 typedef std::vector<std::pair<std::string, std::vector<int>>> Table;
