@@ -1,6 +1,5 @@
 #include "csv.h"
 
-
 Table readCsv(std::string &file)
 {
     Table contents;
@@ -30,7 +29,7 @@ Table readCsv(std::string &file)
     }
 
     int idx = 0;
-    // get first buy, daisy mae price & turnip sell prices
+    // get prev pattern type, first buy, daisy mae price & turnip sell prices
     while (std::getline(csv, line))
     {
         std::istringstream ss(line);
@@ -62,7 +61,7 @@ Table readCsv(std::string &file)
             }
         }
 
-        if (idx == 13)
+        if (idx == SELL_PRICE_LAST_COL_IDX)
         { // edge case for when csv has only one row but last cell is unfilled
             contents[idx].second.push_back(INT_MIN);
         }
@@ -82,14 +81,21 @@ bool validateTurnips(Table &t)
         throw TurnipException(EMPTY_CSV);
     }
 
-    if (t.size() != 14)
+    if (t.size() != TurnipPattern::HALF_DAYS + 3)
     {
-        // 12 cols for mon-sat am & pm, plus 1 more for daisy mae's price col and 1 for first time buy col
+        // 12 cols for mon-sat am & pm, 1 for daisy mae's price col,  1 for first time buy col, 1 for prev pattern col
         throw TurnipException(CSV_COL_NUM_INVALID);
     }
 
+    // validate previous week pattern type
+    for (int prevPat: t[PREVIOUS_WEEK_PATTERN_COL_IDX].second) {
+        if (!Turnip::validatePrevPatType(prevPat)) {
+            throw TurnipException(INVALID_PREV_PATTERN);
+        }
+    }
+
     // validate daisy mae's sunday price
-    for (int daisymae : t[1].second)
+    for (int daisymae : t[DAISY_MAE_BASE_PRICE_COL_IDX].second)
     {
         if (!Turnip::validateBasePrice(daisymae))
         {
@@ -98,7 +104,7 @@ bool validateTurnips(Table &t)
     }
 
     // validate selling price at nooklings
-    for (int day = 2; day < t.size(); ++day)
+    for (int day = SELL_PRICE_START_COL_IDX; day < t.size(); ++day)
     {
         for (int sell : t[day].second)
         {
@@ -121,7 +127,7 @@ std::vector<Turnip *> tableToTurnip(Table &t)
         int unfilledDays = 0;
         std::vector<int> islandPrice;
 
-        for (int day = 2; day < t.size(); day += 2)
+        for (int day = SELL_PRICE_START_COL_IDX; day < t.size(); day += 2)
         { // get that row's vals (an island's prices)
 
             int amPrice = t[day].second[island];
@@ -140,7 +146,7 @@ std::vector<Turnip *> tableToTurnip(Table &t)
             islandPrice.emplace_back(pmPrice);
         } // done one island's prices
 
-        if (unfilledDays == 12)
+        if (unfilledDays == TurnipPattern::HALF_DAYS)
         {
             // no data filled in for any day, not even one, how do we predict?
             throw TurnipException(NOT_ENOUGH_SELL_DATA);
@@ -148,10 +154,11 @@ std::vector<Turnip *> tableToTurnip(Table &t)
         unfilledDays = 0;
 
         // create turnip obj
-        bool firstTimeBuyer = t[0].second[island];
-        int basePrice = t[1].second[island];
+        int prevPattern = t[PREVIOUS_WEEK_PATTERN_COL_IDX].second[island];
+        bool firstTimeBuyer = t[FIRST_TIME_BUY_COL_IDX].second[island];
+        int basePrice = t[DAISY_MAE_BASE_PRICE_COL_IDX].second[island];
 
-        islandTurnips.emplace_back(new Turnip(basePrice, firstTimeBuyer, islandPrice));
+        islandTurnips.emplace_back(new Turnip(prevPattern, basePrice, firstTimeBuyer, islandPrice));
     }
 
     return islandTurnips;

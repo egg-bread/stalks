@@ -14,7 +14,6 @@ typedef std::set <OnePriceSeq> UniquePriceSeqs;
 // maps pattern type to a map of pattern type - base price - UniquePriceSeqs
 typedef std::map<int, std::map<int, UniquePriceSeqs>> AllPrices;
 
-
 enum class Patterns {
     RANDOM,
     LARGE,
@@ -22,18 +21,23 @@ enum class Patterns {
     SMALL
 };
 
-const std::vector <std::string> PatternNames = {"Random", "Large Profit", "Decreasing", "Small Profit"};
+const std::vector <std::string> PATTERN_NAMES = {"Random", "Large Profit", "Decreasing", "Small Profit"};
+
+// PATTERN_RATES[i], where i = previous week's pattern, stores probability (already a percentage) of getting
+// pattern 0, 1, 2, 3 (in that order) for this week
+const std::vector<std::vector<int>> PATTERN_RATES = {{20, 30, 15, 35}, {50, 5, 20, 25}, {25, 45, 5, 25}, {45, 25, 15, 15}};
 
 int intceil(float val);
 
 class TurnipPattern {
 protected:
     UniquePriceSeqs allSeqs; // all pattern price seqs for the given base price
-    const int HALF_DAYS = 12;
     const float MIN_DEC_AMT = 0.03;
     const float MAX_DEC_AMT = 0.05;
 
 public:
+    static const int HALF_DAYS = 12;
+
     TurnipPattern() {}
 
     virtual ~TurnipPattern() {}

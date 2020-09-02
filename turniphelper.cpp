@@ -45,14 +45,14 @@ std::vector<Turnip *> getTurnips(std::string &csv)
 void predictTurnips(std::vector<Turnip *> &islandTurnips, AllPrices *allPrices)
 {
     int islands = islandTurnips.size();
-    int complete = 1;
+    int complete = 0;
     
     std::cout << "Finding pattern matches for " << islands << " island(s)." << std::endl;
     std::cout << std::endl;
     
     for (auto &turnip : islandTurnips)
     {
-        std::cout << "- On island " << complete << " out of " << islands << " -" << std::endl;
+        std::cout << "- On island " << complete + 1 << " out of " << islands << " -" << std::endl;
         turnip->calculateLastInputDay();
         if (turnip->getLastInputDay() == -1)
         { // -1 means that sat PM was filled in, so nothing to predict
@@ -69,6 +69,8 @@ void predictTurnips(std::vector<Turnip *> &islandTurnips, AllPrices *allPrices)
         }
         ++complete;
     }
+
+    std::cout << "Turnipin' in the stalk market done for " << complete << " island(s)." << std::endl;
 }
 
 void cleanupTurnips(std::vector<Turnip *> &islandTurnips)

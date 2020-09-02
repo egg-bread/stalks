@@ -1,8 +1,9 @@
-# stalks
+# stalks: Turnip Price Predictor
 ![Command line display when program starts up](turnip_splash.png)
-Turnip price predictor for your current week on ACNH.
 
-For when your 4000+ turnips need to be sold *soon* but you don't know *when* to sell them to churn in max profit from the stalk market.
+Turnip price predictor for your current turnip-filled week on ACNH.
+
+For when your **4000+** turnips need to be sold *soon* but you don't know *when* to sell them to churn in max profit from the stalk market.
 
 ## Note
 The max/mins calculated could be roughly 1-2 Bells off in either direction due to how turnip prices are generated in-game with their own random float method and how my floats are stored internally. But, there shouldn't be a problem coming up with potential pattern matches.
@@ -16,15 +17,23 @@ Please open an issue with your input example if there exists a valid input where
 - matplotlib
 
 ## Input
-Use the csv file **turnip-input.csv** as your input template. If filling in the template with Excel, make sure to open it as Delimited with comma as the delimiter.
+The 4 stalk market patterns are defined as:
+- Pattern 0, **Random** (increase, decrease, increase, decrease, increase phases)
+- Pattern 1, **Large Profit** (decrease, large spike, random low)
+- Pattern 2, **Decreasing** (decreasing)
+- Pattern 3, **Small Profit** (decreasing, small spike, decreasing)
 
-- **First Time Buy**: enter 1 for `true` or 0 for `false`.
-  -  **Any non-zero integer will be read in as `true`**
-- **Daisy Mae Price**: Price from Daisy Mae when you are buying turnips on Sunday morning
-- **Mon-Sat AM/PM**: Enter in **your island's** selling price from Nook's Cranny for whichever days you have data for 
+Use the csv file **turnip-input.csv** as your input template. If filling in the template with Excel, make sure to open it as Delimited with comma as the delimiter.
+- **Previous Week's Pattern**: 0, 1, 2, or 3
+    - **leave blank if unknown**
+    - *used to display the probability of a matched price sequence of occurring*
+- **First Time Buy**: 1 for `Yes` or 0 for `No`.
+  -  **Any non-zero integer will be read in as `Yes` (your first time ever buying turnips)**
+- **Daisy Mae Price**: Price from Daisy Mae when you are buying turnips on Sunday morning on your island
+- **Mon-Sat AM/PM**: Enter in **your island's** selling price from Nook's Cranny on your island for whichever days you have data for 
   - the remaining days of the week will be predicted
 
-Each row in the csv is an island, so you can enter in multiple rows for multiple islands' turnip predictions.
+Each row in the csv is an island, so you can enter in multiple rows for multiple islands' turnip predictions :-)
 
 ## Usage
 Compiling on command line (optional): `make` 
@@ -34,7 +43,11 @@ Compiling on command line (optional): `make`
 Running program on the command line: `./stalks turnip-input.csv`
 
 ## Output
-The program spits out line graph(s) with guaranteed minimum & possible maximums, and the possible turnip pattern the island is having.
+While predicting price sequences, the console will display the current island's input data and show a matched price sequence's pattern type.
+A total number of matched sequences is displayed after matching is done if at least one match was found.
+
+The program spits out line graph(s) with guaranteed minimum & possible maximums, and the possible turnip pattern(s) the island is having. 
+If the previous week's pattern was supplied, percentages of the matched pattern types will show in by the generated graph.
 
 WIP
 

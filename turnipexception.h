@@ -10,6 +10,7 @@ const std::string CSV_COL_NUM_INVALID = "Csv file doesn't have 13 columns. Make 
 const std::string NOT_ENOUGH_SELL_DATA = "Please provide at least one day's (AM or PM) sell prices for predictions.";
 const std::string EMPTY_CSV = "Csv is blank. Please input data!";
 const std::string NUM_VAL_REQUIRED = "One or more price fields are not numerical. Make sure no cells have empty spaces inputted!";
+const std::string INVALID_PREV_PATTERN = "A previous week pattern is invalid. Pattern types can be 0 - Random, 1 - Large Profit, 2 - Decreasing, 3 - Small Profit. Leave blank if unknown.";
 
 class TurnipException {
     std::string err;

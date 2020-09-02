@@ -18,6 +18,7 @@ class Turnip {
     static const int MAX_BASE = 110;
     static inline std::vector <std::string> weekdays = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
+    int prevPat; // previous week's pattern type between 0 and 3 inclusive; INT_MIN if unknown
     int basePrice;
     int lastInputDay; // last idx in sellPrices that has an entered val
     bool firstBuy;
@@ -31,7 +32,7 @@ class Turnip {
     void printPriceSequence(const std::vector<std::pair<int, int>> &ps);
 
 public:
-    Turnip(int base, bool buy, std::vector<int> sells);
+    Turnip(int prevPat, int base, bool buy, std::vector<int> sells);
 
     int getLastInputDay();
 
@@ -48,6 +49,8 @@ public:
     void graph();
 
     static bool validateBasePrice(int base);
+
+    static bool validatePrevPatType(int pat);
 
     friend std::ostream &operator<<(std::ostream &out, Turnip *turnip);
 };

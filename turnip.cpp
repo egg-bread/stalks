@@ -1,8 +1,9 @@
 #include "turnip.h"
 #include "turnipexception.h"
 
-Turnip::Turnip(int base, bool buy, std::vector<int> sells) : basePrice{base}, firstBuy{buy},
-                                                             sellPrices{std::move(sells)} {}
+Turnip::Turnip(int prevPat, int base, bool buy, std::vector<int> sells) : prevPat{prevPat}, basePrice{base},
+                                                                          firstBuy{buy},
+                                                                          sellPrices{std::move(sells)} {}
 
 int Turnip::getLastInputDay() {
     return lastInputDay;
@@ -48,7 +49,7 @@ bool Turnip::dataMatchesPriceSequence(const std::vector <std::pair<int, int>> &p
     return true;
 }
 
-void Turnip::printPriceSequence(const std::vector<std::pair<int, int>> &ps) {
+void Turnip::printPriceSequence(const std::vector <std::pair<int, int>> &ps) {
     for (auto &pair: ps) {
         std::cout << pair.first << "," << pair.second << " ";
     }
@@ -85,24 +86,27 @@ void Turnip::predictHelper(std::map<int, UniquePriceSeqs> &seqs, MatchMap &match
     for (auto &priceSeq: seqForBase) { // iterate over all price sequences for in base price
         if (dataMatchesPriceSequence(priceSeq)) {
             matches[priceSeq] = patType;
-            std::cout << "Found a potential price sequence with pattern type: " << PatternNames[patType] << std::endl;
-            printPriceSequence(priceSeq);
+            std::cout << "Found a potential price sequence with pattern type: " << PATTERN_NAMES[patType] << std::endl;
+          //  printPriceSequence(priceSeq);
         }
     }
 }
 
 void Turnip::graph() {
     std::cout << "Generating graph for pattern match(es)..." << std::endl;
-    // TODO
-    std::cout << "Completed prediction for current island." << std::endl;
+    // TODO: matplotlib
+    // display percentages of matched pattern type(s) on graph text area if not first buy (otherwise it's 100% small profit pattern)
+    std::cout << "Completed prediction for current island." << std::endl << std::endl;
 }
 
 std::ostream &operator<<(std::ostream &out, Turnip *turnip) {
     std::string buyer = turnip->firstBuy ? "Yes" : "No";
+    std::string previousWeek = turnip->prevPat != INT_MIN ? PATTERN_NAMES[turnip->prevPat] : "N/A";
 
     out << "======================" << std::endl;
-    out << "Base price: " << turnip->basePrice << std::endl;
+    out << "Previous week's pattern: " << previousWeek << std::endl;
     out << "First time buyer? " << buyer << std::endl;
+    out << "Base price: " << turnip->basePrice << std::endl;
     out << "======================" << std::endl;
     out << std::left << std::setw(5) << std::setfill(' ') << "";
     out << std::left << std::setw(5) << std::setfill(' ') << "AM";
@@ -125,4 +129,8 @@ std::ostream &operator<<(std::ostream &out, Turnip *turnip) {
 
 bool Turnip::validateBasePrice(int p) {
     return (Turnip::MAX_BASE >= p && Turnip::MIN_BASE <= p) || p == INT_MIN;
+}
+
+bool Turnip::validatePrevPatType(int pat) {
+    return (PATTERN_NAMES.size() > pat && 0 <= pat) || pat == INT_MIN;
 }
