@@ -9,8 +9,9 @@ The max/mins calculated could be roughly 1-2 Bells off in either direction due t
 
 Please open an issue with your input example if there exists a valid input where NO match is found :-)
 
-## Requirements
+## Dependencies
 - GCC C++ compiler (if compiling from source)
+- C++17
 - Python 2.7 or Python 3
 - matplotlip-cpp
 
@@ -27,6 +28,7 @@ Each row in the csv is an island, so you can enter in multiple rows for multiple
 
 ## Usage
 Compiling on command line (optional): `make` 
+- Location of Python header and library may need to be changed in the Makefile (I'm on Mac)
 
 Running program on the command line: `./stalks turnip-input.csv`
 
