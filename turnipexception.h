@@ -11,8 +11,7 @@ const std::string NOT_ENOUGH_SELL_DATA = "Please provide at least one day's (AM 
 const std::string EMPTY_CSV = "Csv is blank. Please input data!";
 const std::string NUM_VAL_REQUIRED = "One or more price fields are not numerical. Make sure no cells have empty spaces inputted!";
 
-class TurnipException
-{
+class TurnipException {
     std::string err;
 
 public:

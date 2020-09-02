@@ -1,5 +1,4 @@
 #include "turnippatterns.h"
-#include <iostream>
 
 // from https://gist.github.com/Treeki/85be14d297c80c8b3c0a76375743325b
 int intceil(float val)
@@ -9,7 +8,9 @@ int intceil(float val)
 
 /* TURNIP PATTERN METHODS */
 
-TurnipPattern::TurnipPattern(float minDecAmt, float maxDecAmt) : MIN_DEC_AMT{minDecAmt}, MAX_DEC_AMT{maxDecAmt} {}
+TurnipPattern::TurnipPattern(float minDecAmt, float maxDecAmt) : MIN_DEC_AMT{minDecAmt}, MAX_DEC_AMT{maxDecAmt}
+{
+}
 
 UniquePriceSeqs TurnipPattern::getAllSeqs()
 {
@@ -36,7 +37,6 @@ void TurnipPattern::price(int base, OnePriceSeq &p, int halfs, float lowBaseRate
 
 void RandomPat::calculate(int base)
 {
-
     for (int incOne = 0; incOne <= 6; ++incOne)
     {
         int temp = 7 - incOne;
@@ -75,7 +75,6 @@ void RandomPat::calculate(int base)
 
 void LargePat::calculate(int base)
 {
-
     for (int simmerDec = 1; simmerDec <= 7; ++simmerDec)
     {
         int decPhase = HALF_DAYS - simmerDec - 5;
@@ -110,6 +109,9 @@ void DecPat::calculate(int base)
 {
     OnePriceSeq seq;
     price(base, seq, HALF_DAYS, DEC_MIN, DEC_MAX, MIN_DEC_AMT, MAX_DEC_AMT);
+
+    // add to set
+    allSeqs.insert(seq);
 }
 
 /* SMALL PATTERN METHODS */
@@ -133,24 +135,37 @@ void SmallPat::calculate(int base)
             // dec phase 2
             price(base, seq, HALF_DAYS - decOne - 5, DEC_MIN, DEC_MAX, MIN_DEC_AMT, MAX_DEC_AMT);
 
-            for (auto &p : seq)
-            {
-                std::cout << p.first << "," << p.second << " ";
-            }
-            std::cout << std::endl;
+            // add to set
+            allSeqs.insert(seq);
         }
     }
 }
 
-AllPricePatterns::AllPricePatterns()
+AllPricePatterns::AllPricePatterns() : patterns{{new RandomPat(), new LargePat(), new DecPat(), new SmallPat()}}, allPrices{new AllPrices()}
 {
     for (int base = MIN_BASE; base <= MAX_BASE; ++base)
     {
-        for (int i = 0; i < 4; ++i)
+        for (int i = 0; i < patterns.size(); ++i)
         {
-            TurnipPattern * turnipPat = patterns[i];
+            TurnipPattern *turnipPat = patterns[i];
             turnipPat->calculate(base);
-            allPrices->at(i)[base] = turnipPat->getAllSeqs();
+            (*allPrices)[i][base] = turnipPat->getAllSeqs();
         }
-    } 
+    }
+}
+
+void AllPricePatterns::print() {
+    for (int i = 0; i < 4; ++i) {
+        std::cout << "======= PATTERN " << i << " =======" << std::endl;
+        for (int base = MIN_BASE; base <= MAX_BASE; ++base) {
+            std::cout << base << " AS BASE PRICE" << std::endl;
+            for (auto &priceSeq: (*allPrices)[i][base]) {
+                for (auto &prices: priceSeq) {
+                    std::cout << prices.first << "," << prices.second << " ";
+                }
+            } // one price sequence
+            std::cout << std::endl;
+        }
+        std::cout << "================" << "=========" << std::endl;
+    }
 }

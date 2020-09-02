@@ -24,4 +24,5 @@ void predictTurnips(std::vector<Turnip *> &islandTurnips, AllPrices *allPrices);
 
 // free heap memory; called after done predicting
 void cleanupTurnips(std::vector<Turnip *> &islandTurnips);
+
 #endif

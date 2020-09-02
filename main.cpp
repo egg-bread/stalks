@@ -15,10 +15,10 @@ void run(std::string csvFile)
     vector<Turnip *> islandTurnips = getTurnips(csvFile);
 
     // generate all ranges of turnip price pattern sequences
-    AllPrices *allPriceSeqs = new AllPrices();
+    AllPricePatterns *allPriceSeqs = new AllPricePatterns();
 
     // iterate over all islands to predict prices & generate graphs
-    predictTurnips(islandTurnips, allPriceSeqs);
+    predictTurnips(islandTurnips, allPriceSeqs->getAllPrices());
 
     delete allPriceSeqs;
 }

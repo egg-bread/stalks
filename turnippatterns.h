@@ -1,48 +1,54 @@
 #ifndef _T_PAT_H_
 #define _T_PAT_H_
 
-#include <unordered_map>
+#include <map>
 #include <set>
 #include <vector>
 #include <utility>
+#include <iostream>
 
-typedef std::vector<std::pair<int, int>> OnePriceSeq; // one price sequence for a pattern
-typedef std::set<OnePriceSeq> UniquePriceSeqs;        // all possible price sequences for a pattern
+// one price sequence for a pattern, each pair is 1 half day (Mon AM - Sat PM), storing min & max for that half day
+typedef std::vector <std::pair<int, int>> OnePriceSeq;
+// all possible price sequences for a pattern
+typedef std::set <OnePriceSeq> UniquePriceSeqs;
+// maps pattern type to a map of pattern type - base price - UniquePriceSeqs
+typedef std::map<int, std::map<int, UniquePriceSeqs>> AllPrices;
 
-// maps pattern type to a map of base price - prices for 12 half days where each pair
-// reps the price for a half day (pair.first = min, pair.second = max)
-typedef std::unordered_map<int, std::unordered_map<int, UniquePriceSeqs>> AllPrices;
 
-
-enum class Patterns
-{
+enum class Patterns {
     RANDOM,
     LARGE,
     DEC,
     SMALL
 };
 
+const std::vector <std::string> PatternNames = {"Random", "Large Profit", "Decreasing", "Small Profit"};
+
 int intceil(float val);
 
-class TurnipPattern
-{
+class TurnipPattern {
 protected:
-    UniquePriceSeqs allSeqs; // all Random pattern price seqs for the given base price
+    UniquePriceSeqs allSeqs; // all pattern price seqs for the given base price
     const int HALF_DAYS = 12;
     const float MIN_DEC_AMT = 0.03;
     const float MAX_DEC_AMT = 0.05;
 
 public:
     TurnipPattern() {}
+
     virtual ~TurnipPattern() {}
+
     TurnipPattern(float minDecAmt, float maxDecAmt);
+
     UniquePriceSeqs getAllSeqs();
+
     virtual void calculate(int base) = 0;
-    void price(int base, OnePriceSeq &p, int halfs, float lowBaseRate, float hiBaseRate, float minDecAmt, float maxDecAmt);
+
+    void
+    price(int base, OnePriceSeq &p, int halfs, float lowBaseRate, float hiBaseRate, float minDecAmt, float maxDecAmt);
 };
 
-class RandomPat final : public TurnipPattern
-{
+class RandomPat final : public TurnipPattern {
     const float INC_MIN = 0.9;
     const float INC_MAX = 1.4;
     const float DEC_MIN = 0.6;
@@ -50,20 +56,23 @@ class RandomPat final : public TurnipPattern
 
 public:
     RandomPat() : TurnipPattern(0.04, 0.1) {}
+
     void calculate(int base) override;
 };
 
-class LargePat final : public TurnipPattern
-{
+class LargePat final : public TurnipPattern {
     // simmering decrease
     const float SIMMER_DEC_MIN = 0.85;
     const float SIMMER_DEC_MAX = 0.9;
 
     // boiling increase
-    const std::vector<std::pair<float, float>> BOIL_INC_MIN_MAX = {{0.9, 1.4}, {1.4, 2}, {2, 6}};
+    const std::vector <std::pair<float, float>> BOIL_INC_MIN_MAX = {{0.9, 1.4},
+                                                                    {1.4, 2},
+                                                                    {2,   6}};
 
     // boiling decrease
-    const std::vector<std::pair<float, float>> BOIL_DEC_MIN_MAX = {{1.4, 2}, {0.9, 1.4}};
+    const std::vector <std::pair<float, float>> BOIL_DEC_MIN_MAX = {{1.4, 2},
+                                                                    {0.9, 1.4}};
 
     // rand decrease
     const float RAND_DEC_MIN = 0.4;
@@ -71,21 +80,21 @@ class LargePat final : public TurnipPattern
 
 public:
     LargePat() : TurnipPattern() {}
+
     void calculate(int base) override;
 };
 
-class DecPat final : public TurnipPattern
-{
+class DecPat final : public TurnipPattern {
     const float DEC_MIN = 0.85;
     const float DEC_MAX = 0.9;
 
 public:
     DecPat() : TurnipPattern() {}
+
     void calculate(int base) override;
 };
 
-class SmallPat final : public TurnipPattern
-{
+class SmallPat final : public TurnipPattern {
     const float DEC_MIN = 0.4;
     const float DEC_MAX = 0.9;
     const float INC_MIN = 0.9;
@@ -94,27 +103,28 @@ class SmallPat final : public TurnipPattern
 
 public:
     SmallPat() : TurnipPattern() {}
+
     void calculate(int base) override;
 };
 
 // class that calcs ALL the price sequences for all 4 patterns!
-class AllPricePatterns
-{
+class AllPricePatterns {
     const int MIN_BASE = 90;
     const int MAX_BASE = 110;
-    std::vector<TurnipPattern *> patterns = {new RandomPat(), new LargePat(), new DecPat(), new SmallPat()};
-    AllPrices *allPrices = new AllPrices();
+    std::vector<TurnipPattern *> patterns;
+    AllPrices *allPrices;
 
 public:
     AllPricePatterns();
-    AllPrices *getAllPrices()
-    {
+
+    AllPrices *getAllPrices() {
         return allPrices;
     }
-    ~AllPricePatterns()
-    {
-        for (auto &p : patterns)
-        {
+
+    void print();
+
+    ~AllPricePatterns() {
+        for (auto &p : patterns) {
             delete p;
         }
 
