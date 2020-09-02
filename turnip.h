@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <climits>
 #include "turnippatterns.h"
+#include "matplotlibcpp.h"
 
 typedef std::map<OnePriceSeq, int> MatchMap;
 

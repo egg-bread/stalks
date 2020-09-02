@@ -1,6 +1,9 @@
 #include "turnip.h"
 #include "turnipexception.h"
 
+namespace plt = matplotlibcpp;
+
+
 Turnip::Turnip(int prevPat, int base, bool buy, std::vector<int> sells) : prevPat{prevPat}, basePrice{base},
                                                                           firstBuy{buy},
                                                                           sellPrices{std::move(sells)} {}
