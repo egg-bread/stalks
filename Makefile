@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -MMD -Werror=vla
 EXEC = stalks
-OBJECTS = sellprice.o turnip.o csv.o turnipexception.o turnipart.o main.o
+OBJECTS = sellprice.o turnip.o csv.o turnipexception.o turnipart.o turnippatterns.o main.o
 DEPENDS = ${OBJECTS:.o=.d}
 
 ${EXEC}: ${OBJECTS}

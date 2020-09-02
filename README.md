@@ -1,7 +1,13 @@
 # stalks
+![Command line display when program starts up](turnip_splash.png)
 Turnip price predictor for your current week on ACNH.
 
 For when your 4000+ turnips need to be sold *soon* but you don't know *when* to sell them to churn in max profit from the stalk market.
+
+## Note
+The max/mins calculated could be roughly 1-2 Bells off in either direction due to how turnip prices are generated in-game with their own random float method and how my floats are stored internally. But, there shouldn't be a problem coming up with potential pattern matches.
+
+Please open an issue with your input example if there exists a valid input where NO match is found :-)
 
 ## Requirements
 - GCC C++ compiler (if compiling from source)
@@ -26,3 +32,8 @@ Running program on the command line: `./stalks turnip-input.csv`
 
 ## Output
 The program spits out line graph(s) with guaranteed minimum & possible maximums, and the possible turnip pattern the island is having.
+
+WIP
+
+## Special Thanks
+- Ninji's [gist](https://gist.github.com/Treeki/85be14d297c80c8b3c0a76375743325b) for how turnip prices are generated in-game

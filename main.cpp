@@ -1,12 +1,13 @@
 #include <iostream>
 #include "csv.h"
 #include "turnipart.h"
+#include "turnippatterns.h"
 
 using namespace std;
 
 /*
     Created by egg-bread on GitHub.
-    Last update: Aug 31, 2020
+    Last update: Sept 1, 2020
 */
 
 const string INVALID_ARG_NUM = "You've entered an invalid number of arguments!";
@@ -69,6 +70,7 @@ void predictTurnips(vector<Turnip *> &islandTurnips)
             // predict from lastInputDay + 1 and onwards
             cout << PREDICTING << endl;
             cout << turnip << endl;
+            turnip->predict();
         }
     }
 }
@@ -79,14 +81,21 @@ int main(int argc, char **argv)
     {
         try
         {
+            // generate all ranges of turnip price pattern sequences
+            AllPrices * allPriceSeqs = new AllPrices();
+            // TODO;
+        
             // read in csv
             string csvFile = argv[argc - 1];
             vector<Turnip *> islandTurnips = getTurnips(csvFile);
 
             // iterate over all islands to predict prices
-            predictTurnips(islandTurnips);
+            predictTurnips(islandTurnips); // TODO;
 
             // generate graphs
+            // TODO;
+
+            delete allPriceSeqs;
         }
         catch (TurnipException &e)
         {
