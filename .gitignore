@@ -2,5 +2,4 @@
 .idea
 *.d
 *.o
-stalks
 test.csv

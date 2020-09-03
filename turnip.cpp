@@ -63,7 +63,7 @@ void Turnip::printPriceSequence(const std::vector <std::pair<int, int>> &ps) {
 void Turnip::predict(AllPrices *a, int islandNum) {
     MatchMap matches; // pattern sequence & pattern type kv pair
 
-    if (getLastInputDay()) {
+    if (getFirstBuy()) {
         // turnip pattern 3 (SmallPat) guaranteed
         std::map<int, UniquePriceSeqs> &smallPat = (*a)[(int) Patterns::SMALL];
         predictHelper(smallPat, matches, (int) Patterns::SMALL);
@@ -99,7 +99,6 @@ void Turnip::predictHelper(std::map<int, UniquePriceSeqs> &seqs, MatchMap &match
         if (dataMatchesPriceSequence(priceSeq)) {
             matches[patType].emplace_back(priceSeq);
             std::cout << "Found a potential price sequence with pattern type: " << PATTERN_NAMES[patType] << std::endl;
-            //  printPriceSequence(priceSeq); TODO: CHECk
         }
     }
 }
@@ -143,9 +142,19 @@ void Turnip::graph(int islandNum, OnePriceSeq &consolidatedMatch, int yMin, int 
     const std::string daisyBase = "Sunday Buy Price: " + std::to_string(basePrice);
     const std::string graphName = island + ".pdf";
 
-    // data
-    std::vector<int> mins, maxes;
+    // y axis ticks
+    std::vector<int> yTicks;
+    const int incr = (yMax - yMin) / 10;
+    yTicks.emplace_back(yMin);
+    for (int i = incr; i + incr <= yMax; i += incr) {
+        yTicks.emplace_back(i);
+    }
+    if (yTicks.back() != yMax) {
+        yTicks.emplace_back(yMax);
+    }
 
+    // separate the consolidatedMatch vector of pairs into 2 vectors
+    std::vector<int> mins, maxes;
     for (auto &pair: consolidatedMatch) {
         mins.emplace_back(pair.first);
         maxes.emplace_back(pair.second);
@@ -156,9 +165,10 @@ void Turnip::graph(int islandNum, OnePriceSeq &consolidatedMatch, int yMin, int 
                            {"weight", "demi"}});
     plt::title(daisyBase);
     plt::ylim(yMin - 1, yMax + 1);
-    plt::plot(graphLabels, sellPrices, "oC7");
     plt::plot(graphLabels, mins, "or:");
     plt::plot(graphLabels, maxes, "og:");
+    plt::plot(graphLabels, sellPrices, "oC7");
+    plt::yticks(yTicks);
 
     for (int i = 0; i < sellPrices.size(); ++i) {
         if (sellPrices[i] != INT_MIN) {
@@ -173,7 +183,7 @@ void Turnip::graph(int islandNum, OnePriceSeq &consolidatedMatch, int yMin, int 
 
 std::ostream &operator<<(std::ostream &out, Turnip *turnip) {
     std::string buyer = turnip->firstBuy ? "Yes" : "No";
-    std::string previousWeek = turnip->prevPat != INT_MIN ? PATTERN_NAMES[turnip->prevPat] : "N/A";
+    std::string previousWeek = turnip->prevPat == INT_MIN || turnip->firstBuy ? "N/A": PATTERN_NAMES[turnip->prevPat];
 
     out << "======================" << std::endl;
     out << "Previous week's pattern: " << previousWeek << std::endl;

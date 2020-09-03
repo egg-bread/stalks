@@ -141,6 +141,15 @@ bool isUnfilledField(int n) {
     return n == INT_MIN;
 }
 
+bool onlyOnePatternTypeInMatch(MatchMap &m) {
+    int random = m[0].empty();
+    int large = m[1].empty();
+    int dec = m[2].empty();
+    int small = m[3].empty();
+
+    return random + large + dec + small == 3; // 3 are empty
+}
+
 std::string percentStr(int n) {
     return std::to_string(n) + "%";
 }
@@ -166,7 +175,7 @@ OutputTable matchMapToTable(MatchMap &m, int prevPat, bool firstBuy) {
         int pt = pat.first; // pattern type
         int chance = prevPat == INT_MIN ? INT_MIN : PATTERN_RATES[prevPat][pt]; // probability pt occurs
 
-        if (firstBuy) {
+        if (firstBuy || onlyOnePatternTypeInMatch(m)) {
             chance = 100;
         }
 

@@ -28,6 +28,9 @@ std::vector<Turnip *> tableToTurnip(Table & t);
 
 bool isUnfilledField(int n);
 
+// checks if only one pattern type is among all matched price sequences
+bool onlyOnePatternTypeInMatch(MatchMap &m);
+
 std::string percentStr(int n);
 
 std::string minMaxStr(int min, int max);
@@ -35,5 +38,7 @@ std::string minMaxStr(int min, int max);
 OutputTable matchMapToTable(MatchMap &m, int prevPat, bool firstBuy);
 
 void writeCsv(int islandNum, MatchMap &matches, int prevPat, bool firstBuy);
+
+
 
 #endif
