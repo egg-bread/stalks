@@ -6,6 +6,8 @@
 #include <iostream>
 #include "turnip.h"
 #include "turnippatterns.h"
+#include "csv.h"
+#include "turnipart.h"
 
 const std::string INVALID_ARG_NUM = "You've entered an invalid number of arguments!";
 const std::string HELP_MSG = "Usage: ./stalks turnip_prices.csv";

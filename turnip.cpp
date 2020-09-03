@@ -1,8 +1,9 @@
 #include "turnip.h"
-#include "turnipexception.h"
 
 namespace plt = matplotlibcpp;
 
+const int Turnip::MIN_BASE = 90;
+const int Turnip::MAX_BASE = 110;
 
 Turnip::Turnip(int prevPat, int base, bool buy, std::vector<int> sells) : prevPat{prevPat}, basePrice{base},
                                                                           firstBuy{buy},
@@ -59,7 +60,7 @@ void Turnip::printPriceSequence(const std::vector <std::pair<int, int>> &ps) {
     std::cout << std::endl << std::endl;
 }
 
-void Turnip::predict(AllPrices *a) {
+void Turnip::predict(AllPrices *a, int islandNum) {
     MatchMap matches; // pattern sequence & pattern type kv pair
 
     if (getLastInputDay()) {
@@ -78,8 +79,16 @@ void Turnip::predict(AllPrices *a) {
         std::cout << NO_MATCHES << std::endl;
         std::cout << std::endl;
     } else {
-        std::cout << "Found " << matches.size() << " potential price sequences!" << std::endl;
-        graph();
+        int numMatches = matches[0].size() + matches[1].size() + matches[2].size() + matches[3].size();
+        std::cout << "Found " << numMatches << " potential price sequences!" << std::endl;
+
+        int matchMin = SellPrice::MAX_SELL, matchMax = SellPrice::MIN_SELL;
+        OnePriceSeq consolidatedMatch = consolidateMatches(matches, &matchMin, &matchMax);
+
+        writeCsv(islandNum, matches, prevPat, firstBuy);
+        graph(islandNum, consolidatedMatch, matchMin, matchMax);
+
+        std::cout << "Completed prediction for current island." << std::endl << std::endl;
     }
 }
 
@@ -88,18 +97,78 @@ void Turnip::predictHelper(std::map<int, UniquePriceSeqs> &seqs, MatchMap &match
 
     for (auto &priceSeq: seqForBase) { // iterate over all price sequences for in base price
         if (dataMatchesPriceSequence(priceSeq)) {
-            matches[priceSeq] = patType;
+            matches[patType].emplace_back(priceSeq);
             std::cout << "Found a potential price sequence with pattern type: " << PATTERN_NAMES[patType] << std::endl;
-          //  printPriceSequence(priceSeq);
+            //  printPriceSequence(priceSeq); TODO: CHECk
         }
     }
 }
 
-void Turnip::graph() {
-    std::cout << "Generating graph for pattern match(es)..." << std::endl;
-    // TODO: matplotlib
-    // display percentages of matched pattern type(s) on graph text area if not first buy (otherwise it's 100% small profit pattern)
-    std::cout << "Completed prediction for current island." << std::endl << std::endl;
+OnePriceSeq Turnip::consolidateMatches(MatchMap &m, int *min, int *max) {
+    OnePriceSeq merged(12, std::make_pair(SellPrice::MAX_SELL, SellPrice::MIN_SELL));
+
+    for (int pType = 0; pType < 4; ++pType) {
+        if (!m[pType].empty()) { // prediction includes this pattern type
+            for (auto &seq: m[pType]) { // iterate through matched sequences of the pattern type
+                for (int i = 0; i < seq.size(); ++i) {
+                    // update min and max if necessary
+                    if (seq[i].first < *min) {
+                        *min = seq[i].first;
+                    }
+                    if (seq[i].second > *max) {
+                        *max = seq[i].second;
+                    }
+
+                    // update merged
+                    if (seq[i].first < merged[i].first &&
+                        seq[i].second > merged[i].second) { // update min and max for half day i
+                        merged[i] = std::make_pair(seq[i].first, seq[i].second);
+                    } else if (seq[i].first < merged[i].first) { // update min for half day i
+                        merged[i] = std::make_pair(seq[i].first, merged[i].second);
+                    } else if (seq[i].second > merged[i].second) { // update max for half day i
+                        merged[i] = std::make_pair(merged[i].first, seq[i].second);
+                    }
+                }
+            }
+        }
+    }
+
+    return merged;
+}
+
+void Turnip::graph(int islandNum, OnePriceSeq &consolidatedMatch, int yMin, int yMax) {
+    std::cout << "Generating graph for consolidated pattern match(es)..." << std::endl;
+
+    const std::string island = "Island " + std::to_string(islandNum);
+    const std::string daisyBase = "Sunday Buy Price: " + std::to_string(basePrice);
+    const std::string graphName = island + ".pdf";
+
+    // data
+    std::vector<int> mins, maxes;
+
+    for (auto &pair: consolidatedMatch) {
+        mins.emplace_back(pair.first);
+        maxes.emplace_back(pair.second);
+    }
+
+    plt::figure_size(1600, 830); // pixel size width and height
+    plt::suptitle(island, {{"size",   "x-large"},
+                           {"weight", "demi"}});
+    plt::title(daisyBase);
+    plt::ylim(yMin - 1, yMax + 1);
+    plt::plot(graphLabels, sellPrices, "oC7");
+    plt::plot(graphLabels, mins, "or:");
+    plt::plot(graphLabels, maxes, "og:");
+
+    for (int i = 0; i < sellPrices.size(); ++i) {
+        if (sellPrices[i] != INT_MIN) {
+            plt::annotate(std::to_string(sellPrices[i]), i + 0.05, sellPrices[i] + 0.05);
+        }
+    }
+
+    plt::save(graphName);
+
+    std::cout << "Saved graph as: " << graphName << std::endl;
 }
 
 std::ostream &operator<<(std::ostream &out, Turnip *turnip) {

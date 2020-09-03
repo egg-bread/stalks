@@ -1,6 +1,4 @@
 #include "turniphelper.h"
-#include "csv.h"
-#include "turnipart.h"
 
 void printReadTurnips(std::vector<Turnip *> &islandTurnips)
 {
@@ -65,7 +63,7 @@ void predictTurnips(std::vector<Turnip *> &islandTurnips, AllPrices *allPrices)
             std::cout << PREDICTING << std::endl;
             std::cout << turnip;
 
-            turnip->predict(allPrices);
+            turnip->predict(allPrices, complete + 1);
         }
         ++complete;
     }

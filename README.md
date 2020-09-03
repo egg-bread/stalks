@@ -42,14 +42,19 @@ Compiling on command line (optional): `make`
 
 Running program on the command line: `./stalks turnip-input.csv`
 
+A sample input and output is available under the `example` folder.
+
 ## Output
 While predicting price sequences, the console will display the current island's input data and show a matched price sequence's pattern type.
 A total number of matched sequences is displayed after matching is done if at least one match was found.
 
-The program spits out line graph(s) with guaranteed minimum & possible maximums, and the possible turnip pattern(s) the island is having. 
-If the previous week's pattern was supplied, percentages of the matched pattern types will show in by the generated graph.
+The program spits out a line graph for each island/row in the input csv in the current directory. The graph has:
+- island's observed prices as scatter plot
+- guaranteed minimums of matched sequences as line graph
+- possible maximums of matched sequences as line graph
 
-WIP
+A csv is generated in the current directory too, where each row lists the potential price sequence details (min/max for each of the 14 price periods in the week).
+If the previous week's pattern was supplied, percentages of the matched pattern types will show in the first column.
 
 ## Special Thanks
 - Ninji's [gist](https://gist.github.com/Treeki/85be14d297c80c8b3c0a76375743325b) for how turnip prices are generated in-game

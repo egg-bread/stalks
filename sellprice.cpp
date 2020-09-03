@@ -1,6 +1,8 @@
 #include "sellprice.h"
-#include "turnipexception.h"
 #include <climits>
+
+const int SellPrice::MIN_SELL = 9;
+const int SellPrice::MAX_SELL = 660;
 
 bool SellPrice::validateSellPrice(int p)
 {

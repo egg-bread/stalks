@@ -1,24 +1,21 @@
 #ifndef _CSV_H_
 #define _CSV_H_
 
-#include <string>
-#include <vector>
 #include <sstream>
 #include <fstream>
-#include <utility>
 #include <climits>
+#include <iostream>
 #include "turnipexception.h"
-#include "turnip.h"
 #include "sellprice.h"
-
-// each pair is the col name and all values falling under the col in Table
-typedef std::vector <std::pair<std::string, std::vector<int>>> Table;
+#include "turnip.h"
+#include "typedefs.h"
 
 const int PREVIOUS_WEEK_PATTERN_COL_IDX = 0;
 const int FIRST_TIME_BUY_COL_IDX = 1;
 const int DAISY_MAE_BASE_PRICE_COL_IDX = 2;
 const int SELL_PRICE_START_COL_IDX = 3;
 const int SELL_PRICE_LAST_COL_IDX = 12 + SELL_PRICE_START_COL_IDX - 1;
+
 // read in turnips csv
 Table readCsv(std::string &file);
 
@@ -30,5 +27,13 @@ bool validateTurnips(Table & t);
 std::vector<Turnip *> tableToTurnip(Table & t);
 
 bool isUnfilledField(int n);
+
+std::string percentStr(int n);
+
+std::string minMaxStr(int min, int max);
+
+OutputTable matchMapToTable(MatchMap &m, int prevPat, bool firstBuy);
+
+void writeCsv(int islandNum, MatchMap &matches, int prevPat, bool firstBuy);
 
 #endif

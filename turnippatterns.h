@@ -1,18 +1,8 @@
 #ifndef _T_PAT_H_
 #define _T_PAT_H_
 
-#include <map>
-#include <set>
-#include <vector>
-#include <utility>
 #include <iostream>
-
-// one price sequence for a pattern, each pair is 1 half day (Mon AM - Sat PM), storing min & max for that half day
-typedef std::vector <std::pair<int, int>> OnePriceSeq;
-// all possible price sequences for a pattern
-typedef std::set <OnePriceSeq> UniquePriceSeqs;
-// maps pattern type to a map of pattern type - base price - UniquePriceSeqs
-typedef std::map<int, std::map<int, UniquePriceSeqs>> AllPrices;
+#include "typedefs.h"
 
 enum class Patterns {
     RANDOM,
