@@ -57,9 +57,9 @@ A total number of matched sequences is displayed after matching is done if at le
 
 ### Line graph
 The program spits out a line graph pdf for each island/row in the input csv in the current directory. The graph has:
-- island's observed prices as scatter plot
-- guaranteed minimums of matched sequences as line graph
-- possible maximums of matched sequences as line graph
+- island's observed prices as grey scatter plot labelled with price
+- guaranteed minimums of matched sequences as red dashed line 
+- possible maximums of matched sequences as green dashed line 
 
 The lowest y-axis tick and highest y-axis tick are the guaranteed minimum price and possible
 maximum price among all matched price sequences found.
