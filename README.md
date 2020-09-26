@@ -14,7 +14,7 @@ with potential pattern matches.
 
 ## Dependencies
 - GCC C++ compiler (if compiling from source)
-- C++17
+- at least C++11
 - Python 2.7 or Python 3
 - matplotlib
 
